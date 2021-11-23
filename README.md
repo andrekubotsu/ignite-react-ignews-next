@@ -17,7 +17,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 - CMS without the front-end, just a admin dashboard
 - serves content through APIs (http, grahQL, SDK)
-- Free -> Ex.: Strapi (any content), Ghost (blog), Keystone (any content)
+- Free -> Ex.: Strapi (any content), _Ghost (blog)_, Keystone (any content)
 - Paid -> Ex.: GraphCMS, Prismic CMS, Contentful, Shopify, Saleor
 
 ## Features
