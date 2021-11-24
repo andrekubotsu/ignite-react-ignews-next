@@ -41,7 +41,7 @@ export const getServerSideProps: GetServerSideProps = async ({
   const session = await getSession({ req }); // user loogged in?
   const { slug } = params;
 
-  if (!session.activeSubscription) {
+  if (!session?.activeSubscription) {
     return {
       redirect: {
         destination: "/",
