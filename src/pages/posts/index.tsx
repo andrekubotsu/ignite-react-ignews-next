@@ -3,8 +3,19 @@ import Head from "next/head";
 import { getPrismicClient } from "../../services/prismic";
 import styles from "./styles.module.scss";
 import Prismic from "@prismicio/client";
+import { RichText } from "prismic-dom";
 
-export default function Posts() {
+type Post = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  updatedAt: string;
+};
+interface PostsProps {
+  posts: Post[];
+}
+
+export default function Posts({ posts }: PostsProps) {
   return (
     <>
       <Head>
@@ -13,60 +24,13 @@ export default function Posts() {
 
       <main className={styles.container}>
         <div className={styles.posts}>
-          <a href="">
-            <time>23 de novembro de 2021</time>
-            <strong>Creating a monorepo with yarn workspaces</strong>
-            <p>
-              Contrary to popular belief, Lorem Ipsum is not simply random text.
-              It has roots in a piece of classical Latin literature from 45 BC,
-              making it over 2000 years old. Richard McClintock, a Latin
-              professor at Hampden-Sydney College in Virginia, looked up one of
-              the more obscure Latin words, consectetur, from a Lorem Ipsum
-              passage, and going through the cites of the word in classical
-              literature, discovered the undoubtable source. Lorem Ipsum comes
-              from sections 1.10.32 and 1.10.33 of de Finibus Bonorum et Malorum
-              (The Extremes of Good and Evil) by Cicero, written in 45 BC. This
-              book is a treatise on the theory of ethics, very popular during
-              the Renaissance. The first line of Lorem Ipsum, Lorem ipsum dolor
-              sit amet., comes from a line in section 1.10.32.
-            </p>
-          </a>
-          <a href="">
-            <time>23 de novembro de 2021</time>
-            <strong>Creating a monorepo with yarn workspaces</strong>
-            <p>
-              Contrary to popular belief, Lorem Ipsum is not simply random text.
-              It has roots in a piece of classical Latin literature from 45 BC,
-              making it over 2000 years old. Richard McClintock, a Latin
-              professor at Hampden-Sydney College in Virginia, looked up one of
-              the more obscure Latin words, consectetur, from a Lorem Ipsum
-              passage, and going through the cites of the word in classical
-              literature, discovered the undoubtable source. Lorem Ipsum comes
-              from sections 1.10.32 and 1.10.33 of de Finibus Bonorum et Malorum
-              (The Extremes of Good and Evil) by Cicero, written in 45 BC. This
-              book is a treatise on the theory of ethics, very popular during
-              the Renaissance. The first line of Lorem Ipsum, Lorem ipsum dolor
-              sit amet., comes from a line in section 1.10.32.
-            </p>
-          </a>
-          <a href="">
-            <time>23 de novembro de 2021</time>
-            <strong>Creating a monorepo with yarn workspaces</strong>
-            <p>
-              Contrary to popular belief, Lorem Ipsum is not simply random text.
-              It has roots in a piece of classical Latin literature from 45 BC,
-              making it over 2000 years old. Richard McClintock, a Latin
-              professor at Hampden-Sydney College in Virginia, looked up one of
-              the more obscure Latin words, consectetur, from a Lorem Ipsum
-              passage, and going through the cites of the word in classical
-              literature, discovered the undoubtable source. Lorem Ipsum comes
-              from sections 1.10.32 and 1.10.33 of de Finibus Bonorum et Malorum
-              (The Extremes of Good and Evil) by Cicero, written in 45 BC. This
-              book is a treatise on the theory of ethics, very popular during
-              the Renaissance. The first line of Lorem Ipsum, Lorem ipsum dolor
-              sit amet., comes from a line in section 1.10.32.
-            </p>
-          </a>
+          {posts.map((post) => (
+            <a key={post.slug} href="">
+              <time>{post.updatedAt}</time>
+              <strong>{post.title}</strong>
+              <p>{post.excerpt}</p>
+            </a>
+          ))}
         </div>
       </main>
     </>
@@ -84,9 +48,27 @@ export const getStaticProps: GetStaticProps = async () => {
     }
   );
 
-  console.log(response);
+  const posts = response.results.map((post) => {
+    return {
+      slug: post.uid,
+      title: RichText.asText(post.data.title),
+      excerpt:
+        post.data.content.find((content) => content.type === "paragraph")
+          ?.text ?? "",
+      updatedAt: new Date(post.last_publication_date).toLocaleDateString(
+        "pt-BR",
+        {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        }
+      ),
+    };
+  });
 
   return {
-    props: {},
+    props: {
+      posts,
+    },
   };
 };
